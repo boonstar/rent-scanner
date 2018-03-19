@@ -14,4 +14,5 @@ class Estate(models.Model):
     link = models.URLField()
     rent = models.FloatField()
     area = models.FloatField()
+    raw_text = models.TextField()
     ask_date = models.DateTimeField(auto_now_add=True)

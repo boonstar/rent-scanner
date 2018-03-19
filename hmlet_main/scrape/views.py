@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404
 from .forms import QuestionForm
 from django.views.generic.edit import FormView
 from .models import Question, Estate
-from . import search_func
+from . import search_func, utils_propertyguru, utils_iproperty
 
 
 class SearchView(FormView):
@@ -21,27 +21,51 @@ class SearchView(FormView):
         else:
             print('Question asked before')
             qns = Question.objects.get(question=q)
-        self.scan_test(qns)
+        self.scan_iproperty(qns)
+        self.scan_propertyguru(qns)
         # self.scan(form.cleaned_data['question'])
         return super(SearchView, self).form_valid(form)
         
-    # TODO: save all info to model
     
-    def scan_test(self, qns):
-        print(qns.question)
+    
+    def scan_iproperty(self, qns):
+        print('Searching iproperty for {}'.format(qns.question))
         
-        q, property_list,driver = search_func.set_query(qns.question)
+        q, property_list, driver = search_func.set_query_iproperty(qns.question)
         
         for i in property_list:
             # check if exist based on URLField
-            link_url = search_func.get_link(i)
+            link_url = utils_iproperty.get_link(i)
             if not Estate.objects.filter(link=link_url).exists():
                 print('New estate found')
                 est = Estate()
                 est.question = qns
                 est.link = link_url
-                est.area = search_func.get_area(i)
-                est.rent = search_func.get_rent(i)
+                est.area = utils_iproperty.get_area(i)
+                est.rent = utils_iproperty.get_rent(i)
+                est.raw_text = i.text
+                est.save()
+            else:
+                print("Estate already exists")
+        
+        driver.quit()
+        
+    def scan_propertyguru(self, qns):
+        print('Searching propertyguru for {}'.format(qns.question))
+        
+        q, property_list, driver = search_func.set_query_propertyguru(qns.question)
+        
+        for i in property_list:
+            # check if exist based on URLField
+            link_url = utils_propertyguru.get_link(i)
+            if not Estate.objects.filter(link=link_url).exists():
+                print('New estate found')
+                est = Estate()
+                est.question = qns
+                est.link = link_url
+                est.area = utils_propertyguru.get_area(i)
+                est.rent = utils_propertyguru.get_rent(i)
+                est.raw_text = i.text
                 est.save()
             else:
                 print("Estate already exists")
@@ -52,26 +76,3 @@ class SearchView(FormView):
     
     
     
-    
-    def scan(self, q):
-        q, property_list, driver = search_func.set_query(q)
-        data_iproperty = {}
-        q = q.replace(' ', '-')
-        for i in range(len(property_list)):
-            data_iproperty[q + '_' + str(i)] = {}
-            data_iproperty[q + '_' + str(i)]['link'] = search_func.get_link(property_list[i])
-            data_iproperty[q + '_' + str(i)]['rent'] = search_func.get_rent(property_list[i])
-            data_iproperty[q + '_' + str(i)]['area'] = search_func.get_area(property_list[i])
-
-        # save answer
-        search_func.save_obj(data_iproperty, "data_iproperty")
-        
-        driver.quit()
-        
-
-        # load answer and print
-        try:
-            data_iproperty = search_func.load_obj("data_iproperty")
-            print(json.dumps(data_iproperty, indent=4))
-        except:
-            print('pickle is empty')
