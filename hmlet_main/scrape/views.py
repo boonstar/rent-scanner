@@ -1,17 +1,25 @@
 import json
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect, render
 from .forms import QuestionForm
+from django.views import View
 from django.views.generic.edit import FormView
 from .models import Question, Estate
 from . import search_func, utils_propertyguru, utils_iproperty
 
+class ResultView(View):
+    def get(self, request, pk):
+        qns = Question.objects.get(pk=pk)
+        estates = Estate.objects.filter(question=qns)
+        # draw graph etc
+        
+        return render(request, 'results.html', {'estates': estates})
 
 class SearchView(FormView):
     template_name = 'search.html'
     form_class = QuestionForm
-    success_url = '/api/'
-    
-    def form_valid(self, form):
+    # success_url = '/scrape/'
+        
+    def form_valid(self, form, **kwargs):
         q = form.cleaned_data['question']
         if not Question.objects.filter(question=q).exists():
             print('New question')
@@ -21,9 +29,10 @@ class SearchView(FormView):
         else:
             print('Question asked before')
             qns = Question.objects.get(question=q)
-        self.scan_iproperty(qns)
-        self.scan_propertyguru(qns)
-        return super(SearchView, self).form_valid(form)
+        # self.scan_iproperty(qns)
+        # self.scan_propertyguru(qns)
+        # return super(SearchView, self).form_valid(form)
+        return redirect('scrape:results', qns.pk)
         
     
     
