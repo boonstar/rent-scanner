@@ -1,3 +1,4 @@
+import time
 import json
 import pickle
 import os
@@ -35,8 +36,11 @@ def set_query_iproperty(q="west coast"):
     property_list = []
     selector = "li[class^=rent-]"
     
+    timeout = time.time() + 30
     while not property_list:
         property_list = driver.find_elements_by_css_selector(selector)
+        if time.time() > timeout:
+            break
     # driver.quit() # cannot close here. close after scrape
     
     return q, property_list, driver
@@ -54,8 +58,11 @@ def set_query_propertyguru(q="west coast"):
     property_list = []
     selector = "li[class^=listing-item]"
     
+    timeout = time.time() + 30
     while not property_list:
         property_list = driver.find_elements_by_css_selector(selector)
+        if time.time() > timeout:
+            break
         
     # driver.quit() # cannot close here. close after scrape
     

@@ -9,7 +9,7 @@ from . import search_func, utils_propertyguru, utils_iproperty
 class SearchView(FormView):
     template_name = 'search.html'
     form_class = QuestionForm
-    success_url = '/scrape/'
+    success_url = '/api/'
     
     def form_valid(self, form):
         q = form.cleaned_data['question']
@@ -23,7 +23,6 @@ class SearchView(FormView):
             qns = Question.objects.get(question=q)
         self.scan_iproperty(qns)
         self.scan_propertyguru(qns)
-        # self.scan(form.cleaned_data['question'])
         return super(SearchView, self).form_valid(form)
         
     
