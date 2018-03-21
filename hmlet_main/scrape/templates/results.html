@@ -1,5 +1,27 @@
-<h1>Hello Results</h1>
 
-{% for estate in estates %}
-<p>{{ estate.link }}</p>
-{% endfor %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Bokeh Scatter Plots</title>
+   <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-0.9.0.min.css" type="text/css" />
+ </head>
+ <body>
+    {{ div | safe }}
+     
+    {% for estate in estates %}
+    <p>
+      Rent:
+      {{ estate.rent }}
+    </p>
+    <p>
+      Area:
+      {{ estate.area }}
+    </p>
+    {{ estate.link }} <br>
+    {% endfor %}
+
+</body>
+    <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-0.9.0.min.js"></script>
+    {{ script | safe }}
+</html>

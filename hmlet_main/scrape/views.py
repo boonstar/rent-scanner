@@ -1,10 +1,15 @@
 import json
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect, render, render_to_response
 from .forms import QuestionForm
 from django.views import View
 from django.views.generic.edit import FormView
 from .models import Question, Estate
 from . import search_func, utils_propertyguru, utils_iproperty
+# from bokeh.plotting import figure, output_file, show 
+from bokeh.charts import Histogram, show, output_file
+from bokeh.embed import components
+import numpy as np
+
 
 class ResultView(View):
     def get(self, request, pk):
@@ -12,7 +17,46 @@ class ResultView(View):
         estates = Estate.objects.filter(question=qns)
         # draw graph etc
         
-        return render(request, 'results.html', {'estates': estates})
+        ####################################################################
+        
+        rents = [i.rent for i in estates]
+        
+        x= [1,3,5,7,9,11,13]
+        # hist = Histogram(title="Rent Histogram", values="rent", bins=10)
+        hist = Histogram(
+            rents,
+            ylabel='Count',
+            xlabel='Rent($)',
+            bins=8,
+            title='query: {}'.format(qns.question),
+            density=False
+            )
+        
+        script, div = components(hist)
+        # ####################################################################
+        # x= [1,3,5,7,9,11,13]
+        # y= [1,2,3,4,5,6,7]
+        # title = 'y = f(x)'
+        # 
+        # plot = figure(title= title , 
+        #     x_axis_label= 'X-Axis', 
+        #     y_axis_label= 'Y-Axis', 
+        #     plot_width =400,
+        #     plot_height =400)
+        # 
+        # plot.line(x, y, legend= 'f(x)', line_width = 2)
+        # #Store components 
+        # script, div = components(plot)
+
+        #Feed them to the Django template.
+        # return render_to_response( 'bokeh/index.html',
+        #         {'script' : script , 'div' : div} )
+    
+        ####################################################################
+        
+        args = {'estates': estates, 'script': script, 'div': div}
+        
+        return render(request, 'results.html', args)
 
 class SearchView(FormView):
     template_name = 'search.html'
@@ -29,8 +73,8 @@ class SearchView(FormView):
         else:
             print('Question asked before')
             qns = Question.objects.get(question=q)
-        # self.scan_iproperty(qns)
-        # self.scan_propertyguru(qns)
+        self.scan_iproperty(qns)
+        self.scan_propertyguru(qns)
         # return super(SearchView, self).form_valid(form)
         return redirect('scrape:results', qns.pk)
         
