@@ -5,23 +5,49 @@
   <head>
     <title>Bokeh Scatter Plots</title>
    <link rel="stylesheet" href="http://cdn.pydata.org/bokeh/release/bokeh-0.9.0.min.css" type="text/css" />
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
  </head>
  <body>
-    {{ div | safe }}
+   <div class="container">
+     {{ div | safe }}
+     {{ div_psf | safe }}
      
-    {% for estate in estates %}
-    <p>
-      Rent:
-      {{ estate.rent }}
-    </p>
-    <p>
-      Area:
-      {{ estate.area }}
-    </p>
-    {{ estate.link }} <br>
-    {% endfor %}
+     <table style="width:100%">
+      <tr>
+        <th>Condo Name</th>
+        <th>Rent</th>
+        <th>Built-up (sf)</th> 
+        <th>Source</th>
+        <th>Link</th>
+      </tr>
+
+     
+     {% for estate in estates %}
+     <tr>
+       <td>{{ estate.location }}</td>
+       <td>{{ estate.rent|floatformat:"0" }}</td>
+       <td>{{ estate.area|floatformat:"0" }}</td>
+       <td>{{ estate.source }}</td>
+       <td>
+         <a href={{ estate.link }} class="btn btn-default">Link</a>
+       </td>
+     </tr>
+     {% endfor %}
+   </table>
+     
+   </div>
 
 </body>
     <script type="text/javascript" src="http://cdn.pydata.org/bokeh/release/bokeh-0.9.0.min.js"></script>
     {{ script | safe }}
+    {{ script_psf | safe }}
+    
+    <!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+      
+    </script>
 </html>

@@ -13,6 +13,7 @@ class EstateListSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'question',
             'question_asked',
+            'location',
             )
         
 
@@ -31,6 +32,8 @@ class EstateSerializer(serializers.HyperlinkedModelSerializer):
             'raw_text',
             'link',
             'ask_date',
+            'source',
+            'location',
             )
         
 

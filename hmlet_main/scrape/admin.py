@@ -13,7 +13,7 @@ class QuestionAdmin(admin.ModelAdmin):
     
     
 class EstateAdmin(admin.ModelAdmin):
-    list_display = ('question', 'rent', 'area', 'raw_text', 'ask_date')
+    list_display = ('question', 'rent', 'area', 'raw_text', 'ask_date', 'source', 'location')
     
     
 admin.site.register(Question, QuestionAdmin)

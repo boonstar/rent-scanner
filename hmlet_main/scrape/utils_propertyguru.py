@@ -12,7 +12,7 @@ def get_link(i):
     
 def get_rent(i):
     txt = preprocess(i.text)
-    print('\n\n' + txt + '\n\n')
+    # print('\n\n' + txt + '\n\n')
     try:
         rent = re.search('(?<=\$\s)\d+[\,\.]?\d*', txt).group(0)
         rent = float(rent.replace(',', ''))
@@ -31,21 +31,24 @@ def get_area(i):
         print('perhaps area value does not exist')
 
         
-if __name__ == "__main__":
-    raw_text ="""Changi Court
-Fully Furnished Condominium
-698-708 Upper Changi Road East
-1162 sqft · S$ 2.15 psf
-3 3
-S$ 2,500 / mo
-Message
-Mostapha Kamal 3 days
-"""
-
-    print(raw_text)
-    print('#####################################')
-    print(re.sub(r'(?<=sqft).*','bbbbbbbbbbbbbbbbbbbbb', raw_text))
+def get_location(i):
+    txt = i.text.split('\n')
+    if txt[0] == 'FEATURED AGENT':
+        return txt[1]
+    else:
+        return txt[0]
+    # try:
+    #     location = re.search('(.*?)\\n', i.text).group(0)
+    #     return location
+    # except:
+    #     print('perhaps location value does not exist')
+        
     
+    
+xx = "Woodsvale\nFully Furnished Condominium\n1 Woodlands Drive 72\n1292 sqft · Ready to move\n3 2\nS$ 2,600 / mo\nMessage\nAlex Chia 12 hours"
+
+location = re.search('(.*?)\\n', xx).group(0)
+print(location)
     
     
     

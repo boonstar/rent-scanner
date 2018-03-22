@@ -20,9 +20,9 @@ class ResultView(View):
         ####################################################################
         
         rents = [i.rent for i in estates]
+        area = [i.area for i in estates]
+        psf = [x/y for x,y in zip(rents, area)]
         
-        x= [1,3,5,7,9,11,13]
-        # hist = Histogram(title="Rent Histogram", values="rent", bins=10)
         hist = Histogram(
             rents,
             ylabel='Count',
@@ -32,29 +32,19 @@ class ResultView(View):
             density=False
             )
         
-        script, div = components(hist)
-        # ####################################################################
-        # x= [1,3,5,7,9,11,13]
-        # y= [1,2,3,4,5,6,7]
-        # title = 'y = f(x)'
-        # 
-        # plot = figure(title= title , 
-        #     x_axis_label= 'X-Axis', 
-        #     y_axis_label= 'Y-Axis', 
-        #     plot_width =400,
-        #     plot_height =400)
-        # 
-        # plot.line(x, y, legend= 'f(x)', line_width = 2)
-        # #Store components 
-        # script, div = components(plot)
-
-        #Feed them to the Django template.
-        # return render_to_response( 'bokeh/index.html',
-        #         {'script' : script , 'div' : div} )
-    
-        ####################################################################
+        hist_psf = Histogram(
+            psf,
+            ylabel='Count',
+            xlabel='Rent per square feet($)',
+            bins=8,
+            title='query: {}'.format(qns.question),
+            density=False
+            )
         
-        args = {'estates': estates, 'script': script, 'div': div}
+        script, div = components(hist)
+        script_psf, div_psf = components(hist_psf)
+        
+        args = {'estates': estates, 'script': script, 'div': div, 'script_psf': script_psf, 'div_psf': div_psf}
         
         return render(request, 'results.html', args)
 
@@ -89,14 +79,17 @@ class SearchView(FormView):
             # check if exist based on URLField
             link_url = utils_iproperty.get_link(i)
             if not Estate.objects.filter(link=link_url).exists():
-                print('New estate found')
+                print('--------------------New estate found-----------------------')
                 est = Estate()
                 est.question = qns
                 est.link = link_url
                 est.area = utils_iproperty.get_area(i)
                 est.rent = utils_iproperty.get_rent(i)
                 est.raw_text = i.text
+                est.source = 'iproperty'
+                est.location = utils_iproperty.get_location(i)
                 est.save()
+                print(i.text)
             else:
                 print("Estate already exists")
         
@@ -111,14 +104,17 @@ class SearchView(FormView):
             # check if exist based on URLField
             link_url = utils_propertyguru.get_link(i)
             if not Estate.objects.filter(link=link_url).exists():
-                print('New estate found')
+                print('--------------------New estate found-----------------------')
                 est = Estate()
                 est.question = qns
                 est.link = link_url
                 est.area = utils_propertyguru.get_area(i)
                 est.rent = utils_propertyguru.get_rent(i)
                 est.raw_text = i.text
+                est.source = 'propertyguru'
+                est.location = utils_propertyguru.get_location(i)
                 est.save()
+                print(i.text)
             else:
                 print("Estate already exists")
         
