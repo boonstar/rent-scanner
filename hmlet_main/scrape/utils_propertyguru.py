@@ -7,7 +7,11 @@ def preprocess(txt):
     
 
 def get_link(i):
-    return i.find_element_by_css_selector('a').get_attribute('href')
+    
+    link = i.find_element_by_css_selector('a').get_attribute('href')
+    link = link.split('?')
+    return link[0]
+    #return i.find_element_by_css_selector('a').get_attribute('href')
 
     
 def get_rent(i):
