@@ -3,8 +3,8 @@ from django.shortcuts import get_object_or_404, redirect, render, render_to_resp
 from .forms import QuestionForm
 from django.views import View
 from django.views.generic.edit import FormView
-from .models import Question, Estate
-from . import search_func, utils_propertyguru, utils_iproperty
+from .models import Question, Estate, NestiaEstate
+from . import search_func, utils_propertyguru, utils_iproperty, utils_nestia
 # from bokeh.plotting import figure, output_file, show 
 from bokeh.charts import Histogram, show, output_file
 from bokeh.embed import components
@@ -63,8 +63,9 @@ class SearchView(FormView):
         else:
             print('Question asked before')
             qns = Question.objects.get(question=q)
-        self.scan_iproperty(qns)
-        self.scan_propertyguru(qns)
+        # self.scan_iproperty(qns)
+        # self.scan_propertyguru(qns)
+        self.scan_nestia(qns)
         # return super(SearchView, self).form_valid(form)
         return redirect('scrape:results', qns.pk)
         
@@ -120,7 +121,14 @@ class SearchView(FormView):
         
         driver.quit()
     
-    
+    # TODO:  scan nestia here.
+    def scan_nestia(self, qns):
+        utils_nestia.test(qns)
+        utils_nestia.scrape(qns)
+        # nest = NestiaEstate()
+        # nest.name = qns
+        # nest.save()
+        
     
     
     
