@@ -26,7 +26,7 @@ pyparsing==2.2.0
 pystache==0.5.4
 python-dateutil==2.7.0
 pytz==2013b0
-PyYAML==3.12
+PyYAML==5.4
 pyzmq==17.0.0
 requests==2.18.4
 selenium==3.11.0
